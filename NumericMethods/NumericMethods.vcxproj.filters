@@ -21,7 +21,7 @@
     <ClCompile Include="NumericMethods.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GaussEnums.h">
+    <ClCompile Include="GaussConstants.h">
       <Filter>Enums</Filter>
     </ClCompile>
   </ItemGroup>

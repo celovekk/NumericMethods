@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GaussEnums.h" />
+    <ClCompile Include="GaussConstants.h" />
     <ClCompile Include="NumericMethods.cpp" />
   </ItemGroup>
   <ItemGroup>

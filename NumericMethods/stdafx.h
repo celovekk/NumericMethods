@@ -4,3 +4,4 @@
 #include <functional> 
 #include <vector> 
 #include "LinearSystemMethods.h"
+#include "GaussConstants.h"
