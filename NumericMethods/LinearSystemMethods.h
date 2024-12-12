@@ -1,7 +1,7 @@
 ﻿#pragma 
 #include <vector>
 
-std::vector<double> solve_linear_system(const std::vector<std::vector<double>>& A, const std::vector<double>& b) {
+inline std::vector<double> solve_linear_system(const std::vector<std::vector<double>>& A, const std::vector<double>& b) {
     int n = A.size();
     std::vector<std::vector<double>> mat = A; 
     std::vector<double> res = b; 
@@ -28,7 +28,7 @@ std::vector<double> solve_linear_system(const std::vector<std::vector<double>>& 
     return x;
 }
 
-std::vector<double> solveLinearSystem(std::vector<std::vector<double>>& A, std::vector<double>& b) {
+inline std::vector<double> solveLinearSystem(std::vector<std::vector<double>>& A, std::vector<double>& b) {
     int N = A.size();
     std::vector<double> solution(N);
 

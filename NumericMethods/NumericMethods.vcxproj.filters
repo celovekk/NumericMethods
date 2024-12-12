@@ -24,6 +24,9 @@
     <ClCompile Include="GaussConstants.h">
       <Filter>Enums</Filter>
     </ClCompile>
+    <ClCompile Include="XLSXWorker.h">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FredgholmEquation.h">

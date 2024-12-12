@@ -5,6 +5,7 @@ struct Fredgholm {
     double lower;
     int step;
     double kernel_vlaue;
+    std::vector<double> weights;
 };
 
 void gauss_legendre(int N, std::vector<double>& nodes, std::vector<double>& weights) {
@@ -45,13 +46,14 @@ double Function(double t) {
     return pow(t, 2) + t / 3 - 1 / 3;
 }
 
-std::vector<double> fredgholm_solver_by_trapezium(const Fredgholm* equastion_params)
+std::vector<double> fredgholm_solver_by_trapezium(Fredgholm* equastion_params)
 {
+    
     double h = (equastion_params->upper - equastion_params->lower) / equastion_params->step;
 
     std::vector<double> t(equastion_params->step + 1);
-    std::vector<double> weights(equastion_params->step + 1);
     std::vector<double> f_values(equastion_params->step + 1);
+    equastion_params->weights.resize(equastion_params->step + 1);
 
     std::vector<std::vector<double>> Matrix(
         equastion_params->step + 1,
@@ -63,20 +65,23 @@ std::vector<double> fredgholm_solver_by_trapezium(const Fredgholm* equastion_par
     for (size_t i = 0; i <= equastion_params->step; ++i) {
         t[i] = equastion_params->lower + i * h;
         f_values[i] = Function(t[i]);
-        weights[i] = (i == 0 || i == equastion_params->step) ? h / 2 : h;
+        equastion_params->weights[i] = (i == 0 || i == equastion_params->step) ? h / 2 : h;
     }
 
     for (size_t i = 0; i <= equastion_params->step; ++i) {
         for (size_t j = 0; j <= equastion_params->step; ++j) {
-            Matrix[i][j] = (i == j ? 1 : 0) - weights[j] * kernel_values(t[j], t[i]);
+            Matrix[i][j] = (i == j ? 1 : 0) - equastion_params->weights[j] * kernel_values(t[j], t[i]);
         }
         b[i] = f_values[i];
     }
+    
     return solve_linear_system(Matrix, b);
 
 }
 
-std::vector<double> fregholm_solver_by_gauss(const Fredgholm * equastion_params){
+std::vector<double> fregholm_solver_by_gauss(void * eq_params){
+
+    auto equastion_params = static_cast<Fredgholm*>(eq_params);
 
     std::vector<double> nodes, weights;
     std::vector<double> nodes_ref, weights_ref;

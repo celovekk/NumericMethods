@@ -5,3 +5,4 @@
 #include <vector> 
 #include "LinearSystemMethods.h"
 #include "GaussConstants.h"
+#include "libxl.h"
