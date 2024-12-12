@@ -8,8 +8,12 @@ public:
 		book->release();
 
 	}
-	void write_solution_for_fredgholm_to_excel(const std::string& file_name, const std::vector<double>& nodes, const std::vector<double>& solution) {
+	void write_solution_for_fredgholm_to_excel(const wchar_t* file_name, const std::vector<double>& nodes, const std::vector<double>& solution) {
+		if (book) {
+			book->release();
+		}
 		book = xlCreateBook();
+
 		if (book) {
 			Sheet* sheet = book->addSheet(L"Sheet1");
 			if (sheet) {
@@ -19,9 +23,8 @@ public:
 				for (size_t i = 0; i < nodes.size(); i++) {
 					sheet->writeNum(i + 2, 1, nodes[i]);
 					sheet->writeNum(i + 2, 2, solution[i]);
-
 				}
-				book->save(L"test.xls");
+				book->save(file_name);
 			}
 		}
 		else {

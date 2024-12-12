@@ -5,7 +5,8 @@ struct Fredgholm {
     double lower;
     int step;
     double kernel_vlaue;
-    std::vector<double> weights;
+    std::vector<double> t;
+    std::vector<double> nodes;
 };
 
 void gauss_legendre(int N, std::vector<double>& nodes, std::vector<double>& weights) {
@@ -48,12 +49,11 @@ double Function(double t) {
 
 std::vector<double> fredgholm_solver_by_trapezium(Fredgholm* equastion_params)
 {
-    
     double h = (equastion_params->upper - equastion_params->lower) / equastion_params->step;
 
-    std::vector<double> t(equastion_params->step + 1);
     std::vector<double> f_values(equastion_params->step + 1);
-    equastion_params->weights.resize(equastion_params->step + 1);
+    std::vector<double> weights(equastion_params->step + 1);
+    equastion_params->t.resize(equastion_params->step + 1);
 
     std::vector<std::vector<double>> Matrix(
         equastion_params->step + 1,
@@ -63,14 +63,14 @@ std::vector<double> fredgholm_solver_by_trapezium(Fredgholm* equastion_params)
     std::vector<double> b(equastion_params->step + 1);
 
     for (size_t i = 0; i <= equastion_params->step; ++i) {
-        t[i] = equastion_params->lower + i * h;
-        f_values[i] = Function(t[i]);
-        equastion_params->weights[i] = (i == 0 || i == equastion_params->step) ? h / 2 : h;
+        equastion_params->t[i] = equastion_params->lower + i * h;
+        f_values[i] = Function(equastion_params->t[i]);
+        weights[i] = (i == 0 || i == equastion_params->step) ? h / 2 : h;
     }
 
     for (size_t i = 0; i <= equastion_params->step; ++i) {
         for (size_t j = 0; j <= equastion_params->step; ++j) {
-            Matrix[i][j] = (i == j ? 1 : 0) - equastion_params->weights[j] * kernel_values(t[j], t[i]);
+            Matrix[i][j] = (i == j ? 1 : 0) - weights[j] * kernel_values(equastion_params->t[j], equastion_params->t[i]);
         }
         b[i] = f_values[i];
     }
@@ -79,15 +79,15 @@ std::vector<double> fredgholm_solver_by_trapezium(Fredgholm* equastion_params)
 
 }
 
-std::vector<double> fregholm_solver_by_gauss(void * eq_params){
-
-    auto equastion_params = static_cast<Fredgholm*>(eq_params);
+std::vector<double> fregholm_solver_by_gauss(Fredgholm* equastion_params){   
 
     std::vector<double> nodes, weights;
     std::vector<double> nodes_ref, weights_ref;
     gauss_legendre(equastion_params->step, nodes_ref, weights_ref);
     
     transform_to_interval(equastion_params->lower, equastion_params->upper, nodes_ref, weights_ref, nodes, weights);
+
+    equastion_params->nodes = nodes;
 
     std::vector<std::vector<double>> A(equastion_params->step, std::vector<double>(equastion_params->step, 0.0));
     std::vector<double> b_vector(equastion_params->step, 0.0);
