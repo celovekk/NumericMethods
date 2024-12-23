@@ -8,30 +8,32 @@ public:
 		book->release();
 
 	}
+	static void write_solution_for_ode(const wchar_t* file_name, double n_count, const std::vector<double>& y_values, const std::vector<double>& z_values) {
 
-	static void write_ode_solution(const wchar_t* file_name, double N, const std::vector<double>& y_values, const std::vector<double>& z_values) {
-		Book* booka = nullptr;
-		if (booka) 
-			booka->release();
+		Book* book_writer;
 
-		booka = xlCreateBook();
+		book_writer = xlCreateBook();
+		if (!book_writer)
+			return;
 
-		if (booka) {
-			Sheet* sheet = booka->addSheet(L"Sheet1");
-			if (sheet) {
-				sheet->writeStr(1, 1, L"steps");
-				sheet->writeStr(1, 2, L"y_val");
-				sheet->writeStr(1, 3, L"z_val");
+		Sheet* sheet = book_writer->addSheet(L"Sheet1");
+		if (!sheet)
+			return;
 
-				for (size_t i = 0; i < N; i++) {
-					sheet->writeNum(i + 2, 1, i);
-					sheet->writeNum(i + 2, 2, y_values[i]);
-					sheet->writeNum(i + 2, 3, z_values[i]);
-				}
-				booka->save(file_name);
-			}
-			else { return; }
+		sheet->writeStr(1, 1, L"N");
+		sheet->writeStr(1, 2, L"y_values");
+		sheet->writeStr(1, 3, L"z_values");
+		
+		for (size_t i = 0; i < n_count; i++) {
+			sheet->writeNum(i + 2, 1, i);
+			sheet->writeNum(i + 2, 2, y_values[i]);
+			sheet->writeNum(i + 2, 3, z_values[i]);
+
 		}
+
+		book_writer->save(file_name);
+
+		book_writer->release();
 	}
 
 	void write_solution_for_fredgholm_to_excel(const wchar_t* file_name, const std::vector<double>& nodes, const std::vector<double>& solution) {

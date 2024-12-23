@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="GaussConstants.h" />
     <ClCompile Include="NumericMethods.cpp" />
+    <ClCompile Include="ODE.h" />
     <ClCompile Include="VolterEquation.h" />
     <ClCompile Include="XLSXWorker.h" />
   </ItemGroup>
