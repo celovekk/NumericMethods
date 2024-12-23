@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "stdafx.h"
 
 class ode_solver {
@@ -12,7 +12,6 @@ private:
 
 	double calculate_y_value(double y, double z){
 		return 998 * y + 1998 * z;
-
 	}
 
 	double calculate_z_value(double y, double z) {
@@ -22,23 +21,64 @@ private:
 	double analytical_y(double y) {
 		return exp(-1000 * y) * (-3 + 4 * exp(999 * y));
 	}
+
 	double analytical_y(double z) {
 		return exp(-1000 * z) * (3 - 2 * exp(999 * z));
 	}
 
 public:
-	/**
- * @brief Решает систему дифференциальных уравнений неявным методом Эйлера.
- *
- * @param file_name - путь для excel файла
- * @param y_s - Y(0).
- * @param z_s - Z(0).
- * @param step - шаг.
- * @param a - начальное значение.
- * @param b - конечное значение.
- */
+
+	/*
+	* @brief Р РµС€РµРЅРёРµ РћР”РЈ СЏРІРЅС‹Рј РјРµС‚РѕРґРѕРј Р­Р№Р»РµСЂР°.
+	*
+	* @param file_name - РїСѓС‚СЊ, РєСѓРґР° СЃРѕС…СЂР°РЅРёС‚СЊ ecxel С„Р°Р№Р».
+	* @param y_s - Y(0).
+	* @param z_s - Z(0).
+	* @param step - С€Р°Рі.
+	* @param a - РЅР°С‡Р°Р»СЊРЅР°СЏ РіСЂР°РЅРёС†Р°.
+	* @param b - ГЄГ®Г­ГҐГ·Г­Г®ГҐ РєРѕРЅРµС‡РЅР°СЏ РіСЂР°РЅРёС†Р°.
+	*/
+	void solve_ode_by_euler(
+		const wchar_t* file_name,
+		double y_s,
+		double z_s,
+		double step,
+		double a,
+		double b
+	) 
+	{
+		double N = (b - a) / step;
+
+		y_values.resize(N);
+		z_values.resize(N);
+
+		y_values[0] = y_s;
+		z_values[0] = z_s;
+
+		for(size_t i = 0; i < N; i++){
+
+			y_values[i] = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
+			z_values[i] = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+
+		}
+
+		excel_worker->write_solution_for_ode(file_name, N, y_values, z_values);
+
+		clean_vectors();
+	}
+
+	/*
+	* @brief Р РµС€РµРЅРёРµ РћР”РЈ РЅРµСЏРІРЅС‹Рј РјРµС‚РѕРґРѕРј Р­Р№Р»РµСЂР°.
+	*
+	* @param file_name - РїСѓС‚СЊ, РєСѓРґР° СЃРѕС…СЂР°РЅРёС‚СЊ ecxel С„Р°Р№Р».
+	* @param y_s - Y(0).
+	* @param z_s - Z(0).
+	* @param step - С€Р°Рі.
+	* @param a - РЅР°С‡Р°Р»СЊРЅР°СЏ РіСЂР°РЅРёС†Р°.
+	* @param b - ГЄГ®Г­ГҐГ·Г­Г®ГҐ РєРѕРЅРµС‡РЅР°СЏ РіСЂР°РЅРёС†Р°.
+	*/
 	void solve_ode_by_implicit_euler(
-		const wchar_t * file_name,
+		const wchar_t* file_name,
 		double y_s,
 		double z_s,
 		double step,
@@ -46,7 +86,6 @@ public:
 		double b
 	)
 	{
-	void solve_ode_by_euler(double step, double a, double b, double y_s, double z_s) {
 		double N = (b - a) / step;
 
 		y_values.resize(N);
@@ -62,24 +101,23 @@ public:
 			y_values[i] = y_values[i - 1] + step * (calculate_y_value(y_values[i - 1], z_values[i - 1]) + calculate_y_value(y_s, z_s)) / 2;
 			z_values[i] = z_values[i - 1] + step * (calculate_z_value(y_values[i - 1], z_values[i - 1]) + calculate_z_value(y_s, z_s)) / 2;
 		}
-		
+
 		excel_worker->write_solution_for_ode(file_name, N, y_values, z_values);
 
 		clean_vectors();
-			y_values[i] = y_values[i - 1] + step * calculate_y_state(y_values[i - 1], z_values[i - 1]);
-			z_values[i] = z_values[i - 1] + step * calculate_z_state(y_values[i - 1], z_values[i - 1]);
+
 	}
 
-	/**
- * @brief Решает систему дифференциальных уравнений неявным методом Эйлера.
- *
- * @param file_name - путь для excel файла
- * @param y_s - Y(0).
- * @param z_s - Z(0).
- * @param step - шаг.
- * @param a - начальное значение.
- * @param b - конечное значение.
- */
+	/*
+	* @brief Р РµС€РµРЅРёРµ РћР”РЈ СѓР»СѓС‡С€РµРЅРЅС‹Рј РјРµС‚РѕРґРѕРј Р­Р№Р»РµСЂР° РІС‚РѕСЂРѕРіРѕ РїРѕСЂСЏРґРєР°.
+	*
+	* @param file_name - РїСѓС‚СЊ, РєСѓРґР° СЃРѕС…СЂР°РЅРёС‚СЊ ecxel С„Р°Р№Р».
+	* @param y_s - Y(0).
+	* @param z_s - Z(0).
+	* @param step - С€Р°Рі.
+	* @param a - РЅР°С‡Р°Р»СЊРЅР°СЏ РіСЂР°РЅРёС†Р°.
+	* @param b - ГЄГ®Г­ГҐГ·Г­Г®ГҐ РєРѕРЅРµС‡РЅР°СЏ РіСЂР°РЅРёС†Р°.
+	*/
 	void solve_ode_by_improved_euler(
 		const wchar_t* file_name,
 		double y_s,
@@ -130,6 +168,7 @@ private:
 		y_values.resize(0);
 		z_values.resize(0);
 	}
-	xlsx_worker* excel_worker;
+
+	
 
 };
