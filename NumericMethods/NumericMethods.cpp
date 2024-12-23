@@ -22,8 +22,12 @@ int main()
     excel->write_solution_for_fredgholm_to_excel(L"popadr.xls", fr->nodes, sol);
 
 // solve ode
+    od->solve_ode_by_euler(L"euler", 1, 1, 0.001, 0, 0.1);
     od->solve_ode_by_implicit_euler(L"implicit_euler.xls", 1, 1, 0.001, 0, 0.1);
     od->solve_ode_by_improved_euler(L"improved_euler.xls", 1, 1, 0.001, 0, 0.1);
+    od->solve_ode_by_gear(GEAR_ONE, L"Gearone.xls", 1, 1, 0.001, 0, 0.1);
+    od->solve_ode_by_gear(GEAR_TWO, L"Geartwo.xls", 1, 1, 0.001, 0, 0.1);
+    od->solve_ode_by_gear(GEAR_FOUR, L"Gearfour.xls", 1, 1, 0.001, 0, 0.1);
     delete od;
     delete excel;
     delete fr;
