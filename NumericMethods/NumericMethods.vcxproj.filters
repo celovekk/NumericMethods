@@ -41,5 +41,11 @@
     <ClInclude Include="LinearSystemMethods.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="VolterEquation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ODE.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

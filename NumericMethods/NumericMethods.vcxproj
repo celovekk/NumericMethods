@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="FredgholmEquation.h" />
     <ClInclude Include="LinearSystemMethods.h" />
+    <ClInclude Include="ODE.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="VolterEquation.h" />
   </ItemGroup>
