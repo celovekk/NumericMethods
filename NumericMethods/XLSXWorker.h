@@ -8,6 +8,34 @@ public:
 		book->release();
 
 	}
+	static void write_solution_for_ode(const wchar_t* file_name, double n_count, const std::vector<double>& y_values, const std::vector<double>& z_values) {
+
+		Book* book_writer;
+
+		book_writer = xlCreateBook();
+		if (!book_writer)
+			return;
+
+		Sheet* sheet = book_writer->addSheet(L"Sheet1");
+		if (!sheet)
+			return;
+
+		sheet->writeStr(1, 1, L"N");
+		sheet->writeStr(1, 2, L"y_values");
+		sheet->writeStr(1, 3, L"z_values");
+		
+		for (size_t i = 0; i < n_count; i++) {
+			sheet->writeNum(i + 2, 1, i);
+			sheet->writeNum(i + 2, 2, y_values[i]);
+			sheet->writeNum(i + 2, 3, z_values[i]);
+
+		}
+
+		book_writer->save(file_name);
+
+		book_writer->release();
+	}
+
 	void write_solution_for_fredgholm_to_excel(const wchar_t* file_name, const std::vector<double>& nodes, const std::vector<double>& solution) {
 		if (book) {
 			book->release();
