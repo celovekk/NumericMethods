@@ -28,6 +28,17 @@ private:
 		return exp(-1000 * z) * (3 - 2 * exp(999 * z));
 	}
 
+	double convert_y_to_implicit(double var_current, double z_current, double step, double step_param){
+
+		return var_current + (-1.0) * step_param + step * calculate_y_value(var_current, z_current);
+	}
+
+	double convert_z_to_implicit(double var_current, double y_current, double step, double step_param) {
+
+		return var_current + (-1.0) * step_param + step * calculate_z_value(y_current, var_current);
+	}
+
+
 public:
 
 	/*
@@ -155,6 +166,30 @@ public:
 
 	}
 
+	void solve_ode_by_gear_one(
+		double y_s,
+		double z_s,
+		double step,
+		double a,
+		double b
+		) 
+	{
+		double N = (b - a) / step;
+
+		y_values.resize(N);
+		z_values.resize(N);
+
+		y_values[0] = y_s;
+		z_values[0] = z_s;
+
+		for (size_t i = 0; i < N; i++) {
+
+
+		}
+
+	}
+
+
 	/*
 	* @brief Решение ОДУ улучшенным методами Гира 1, 2, 4 порядка.
 	*
@@ -191,36 +226,15 @@ public:
 			case GEAR_ONE:
 				for (size_t i = 1; i < N; i++) {
 
-					y_values[i] = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-					z_values[i] = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+					y_values[i] = dihotomy_for_y(-1000, 1000, y_values[i - 1], z_values[i - 1], step);
+					z_values[i] = dihotomy_for_z(-1000, 1000, y_values[i - 1], z_values[i - 1], step);
 
 				}
 				break;
 
 			case GEAR_TWO:
 				for (size_t i = 1; i < N; i++) {
-					y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-					z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
-
-					//y_values[i] = y_values[i - 1] + (step / 2) * (calculate_y_value())
-					//if (i = 1) {
-					//	y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-					//	z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
-			
-					//	/*y_values[i] = y_values[i - 1] + step / 3.0 *
-					//		(2 * calculate_y_value(y_s, z_s) + 3 * calculate_y_value(y_values[i - 1], z_values[i - 1]) - calculate_y_value(y_values[i - 2], z_values[i - 2]));
-
-					//	z_values[i] = z_values[i - 1] + step / 3.0 *
-					//		(2 * calculate_z_value(y_s, z_s) + 3 * calculate_z_value(y_values[i - 1], z_values[i - 1]) - calculate_z_value(y_values[i - 2], z_values[i - 2]));*/
-					//}
-					//else {
-					//	y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-					//	z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
-
-					//	y_values[i] = y_values[i - 1] + step * calculate_y_value(y_s, z_s);
-					//	z_values[i] = z_values[i - 1] + step * calculate_z_value(y_s, z_s);
-
-					//}
+					
 
 				}
 				break;
@@ -307,6 +321,44 @@ private:
 
 		excel_worker->write_errors(file_name, nodes, errors_list);	
 	
+	}
+
+	double dihotomy_for_y(double a, double b, double y_current, double z_current, double step, double epsilon = 0.000001) {
+		double c = 0;
+		do
+		{
+			c = (a + b) / 2;
+			if (convert_y_to_implicit(y_current, z_current, step, a) * convert_y_to_implicit(y_current, z_current, step, c) <= 0)
+			{
+				b = c;
+			}
+			else
+			{
+				a = c;
+			}
+		} while ((b - a) > epsilon);
+
+		return c;
+		
+	}
+
+	double dihotomy_for_z(double a, double b, double y_current, double z_current, double step, double epsilon = 0.000001) {
+		double c = 0;
+		do
+		{
+			c = (a + b) / 2;
+			if (convert_z_to_implicit(y_current, z_current, step, a) * convert_z_to_implicit(y_current, z_current, step, c) <= 0)
+			{
+				b = c;
+			}
+			else
+			{
+				a = c;
+			}
+		} while ((b - a) > epsilon);
+
+		return c;
+
 	}
 
 private:
