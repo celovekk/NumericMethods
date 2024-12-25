@@ -10,4 +10,4 @@
 
 #define GEAR_ONE 1
 #define GEAR_TWO 2
-#define GEAR_FOUR 4
+#define GEAR_THREE 3

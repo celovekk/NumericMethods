@@ -33,6 +33,34 @@ public:
 
 	}
 
+	static void write_solution_for_ode(const wchar_t* file_name, double n_count, const std::vector<double>& u_values) {
+
+		Book* book_writer;
+
+		book_writer = xlCreateBook();
+		if (!book_writer)
+			return;
+
+		Sheet* sheet = book_writer->addSheet(L"Sheet1");
+		if (!sheet)
+			return;
+
+		sheet->writeStr(1, 1, L"N");
+		sheet->writeStr(1, 2, L"u_values");
+		
+
+		for (size_t i = 0; i < n_count; i++) {
+			sheet->writeNum(i + 2, 1, i);
+			sheet->writeNum(i + 2, 2, u_values[i]);
+			
+
+		}
+
+		book_writer->save(file_name);
+
+		book_writer->release();
+	}
+
 	static void write_solution_for_ode(const wchar_t* file_name, double n_count, const std::vector<double>& y_values, const std::vector<double>& z_values) {
 
 		Book* book_writer;
