@@ -179,6 +179,9 @@ public:
 		double b
 		) 
 	{
+		int iter = 0;
+
+		double y_corr, z_corr;	
 		double N = (b - a) / step;
 
 		y_values.resize(N);
@@ -198,62 +201,37 @@ public:
 				break;
 
 			case GEAR_TWO:
-				for (size_t i = 1; i < N; i++) {
-					y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-					z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+				for (size_t i = 1; i < N; i++) {					
+					if (i != 1) {
+						y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
+						z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
 
-					//y_values[i] = y_values[i - 1] + (step / 2) * (calculate_y_value())
-					//if (i = 1) {
-					//	y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-					//	z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
-			
-					//	/*y_values[i] = y_values[i - 1] + step / 3.0 *
-					//		(2 * calculate_y_value(y_s, z_s) + 3 * calculate_y_value(y_values[i - 1], z_values[i - 1]) - calculate_y_value(y_values[i - 2], z_values[i - 2]));
+						y_values[i] = (4.0 * y_values[i - 1] - y_values[i - 2] + 2 * step * calculate_y_value(y_s, z_s)) / 3;
+						z_values[i] = (4.0 * z_values[i - 1] - z_values[i - 2] + 2 * step * calculate_z_value(y_s, z_s)) / 3;
 
-					//	z_values[i] = z_values[i - 1] + step / 3.0 *
-					//		(2 * calculate_z_value(y_s, z_s) + 3 * calculate_z_value(y_values[i - 1], z_values[i - 1]) - calculate_z_value(y_values[i - 2], z_values[i - 2]));*/
-					//}
-					//else {
-					//	y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-					//	z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
-
-					//	y_values[i] = y_values[i - 1] + step * calculate_y_value(y_s, z_s);
-					//	z_values[i] = z_values[i - 1] + step * calculate_z_value(y_s, z_s);
-
-					//}
-
+					}
+					else {
+						y_values[i] = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
+						z_values[i] = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+					}
+					
+					
 				}
 				break;
 
 			case GEAR_FOUR:
-				for (size_t i = 1; i < N; i++) {
-					if (i != 1 && i != 2) {
-						y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-						z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+				for (size_t i = 1; i < 4; i++) {
+					y_values[i] = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
+					z_values[i] = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
 
-						y_values[i] = y_values[i - 1] + step / 25.0 *
-							(12 * calculate_y_value(y_s, z_s) + 32 * calculate_y_value(y_values[i - 1], z_values[i - 1]) - 24 * calculate_y_value(y_values[i - 2], z_values[i - 2]) + 8 * calculate_y_value(y_values[i - 3], z_values[i - 3]));
+				}
 
-						z_values[i] = z_values[i - 1] + step / 25.0 *
-							(12 * calculate_z_value(y_s, z_s) + 32 * calculate_z_value(y_values[i - 1], z_values[i - 1]) - 24 * calculate_z_value(y_values[i - 2], z_values[i - 2]) + 8 * calculate_z_value(y_values[i - 3], z_values[i - 3]));
-					}
-					else if(i == 2){
-						y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-						z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+				for (size_t i = 4; i < N; i++) {
+					y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
+					z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
 
-						y_values[i] = y_values[i - 1] + step / 3.0 *
-							(2 * calculate_y_value(y_s, z_s) + 3 * calculate_y_value(y_values[i - 1], z_values[i - 1]) - calculate_y_value(y_values[i - 2], z_values[i - 2]));
-
-						z_values[i] = z_values[i - 1] + step / 3.0 *
-							(2 * calculate_z_value(y_s, z_s) + 3 * calculate_z_value(y_values[i - 1], z_values[i - 1]) - calculate_z_value(y_values[i - 2], z_values[i - 2]));
-					} 
-					else if (i == 1) {
-						y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-						z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
-
-						y_values[i] = y_values[i - 1] + step * calculate_y_value(y_s, z_s);
-						z_values[i] = z_values[i - 1] + step * calculate_z_value(y_s, z_s);
-					}
+					y_values[i] = (48 * y_values[i - 1] - 36 * y_values[i - 2] + 16 * y_values[i - 3] + 3 * y_values[i - 4] + 12 * step * calculate_y_value(y_s, z_s)) / 25;
+					z_values[i] = (48 * z_values[i - 1] - 36 * z_values[i - 2] + 16 * z_values[i - 3] + 3 * z_values[i - 4] + 12 * step * calculate_z_value(y_s, z_s)) / 25;
 
 				}
 				break;
