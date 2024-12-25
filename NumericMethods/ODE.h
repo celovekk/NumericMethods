@@ -214,6 +214,9 @@ public:
 		double b
 		) 
 	{
+		int iter = 0;
+
+		double y_corr, z_corr;	
 		double N = (b - a) / step;
 
 		y_values.resize(N);
@@ -224,50 +227,26 @@ public:
 
 		switch (type) {
 			case GEAR_ONE:
-				for (size_t i = 1; i < N; i++) {
-
-					y_values[i] = dihotomy_for_y(-1000, 1000, y_values[i - 1], z_values[i - 1], step);
-					z_values[i] = dihotomy_for_z(-1000, 1000, y_values[i - 1], z_values[i - 1], step);
-
-				}
+				gear_one_solver(step, N);
 				break;
 
 			case GEAR_TWO:
-				for (size_t i = 1; i < N; i++) {
-					
-
-				}
+				gear_two_solver(step, N);
 				break;
 
 			case GEAR_FOUR:
-				for (size_t i = 1; i < N; i++) {
-					if (i != 1 && i != 2) {
-						y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-						z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+				for (size_t i = 1; i < 4; i++) {
+					y_values[i] = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
+					z_values[i] = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
 
-						y_values[i] = y_values[i - 1] + step / 25.0 *
-							(12 * calculate_y_value(y_s, z_s) + 32 * calculate_y_value(y_values[i - 1], z_values[i - 1]) - 24 * calculate_y_value(y_values[i - 2], z_values[i - 2]) + 8 * calculate_y_value(y_values[i - 3], z_values[i - 3]));
+				}
 
-						z_values[i] = z_values[i - 1] + step / 25.0 *
-							(12 * calculate_z_value(y_s, z_s) + 32 * calculate_z_value(y_values[i - 1], z_values[i - 1]) - 24 * calculate_z_value(y_values[i - 2], z_values[i - 2]) + 8 * calculate_z_value(y_values[i - 3], z_values[i - 3]));
-					}
-					else if(i == 2){
-						y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-						z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
+				for (size_t i = 4; i < N; i++) {
+					y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
+					z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
 
-						y_values[i] = y_values[i - 1] + step / 3.0 *
-							(2 * calculate_y_value(y_s, z_s) + 3 * calculate_y_value(y_values[i - 1], z_values[i - 1]) - calculate_y_value(y_values[i - 2], z_values[i - 2]));
-
-						z_values[i] = z_values[i - 1] + step / 3.0 *
-							(2 * calculate_z_value(y_s, z_s) + 3 * calculate_z_value(y_values[i - 1], z_values[i - 1]) - calculate_z_value(y_values[i - 2], z_values[i - 2]));
-					} 
-					else if (i == 1) {
-						y_s = y_values[i - 1] + step * calculate_y_value(y_values[i - 1], z_values[i - 1]);
-						z_s = z_values[i - 1] + step * calculate_z_value(y_values[i - 1], z_values[i - 1]);
-
-						y_values[i] = y_values[i - 1] + step * calculate_y_value(y_s, z_s);
-						z_values[i] = z_values[i - 1] + step * calculate_z_value(y_s, z_s);
-					}
+					y_values[i] = (48 * y_values[i - 1] - 36 * y_values[i - 2] + 16 * y_values[i - 3] + 3 * y_values[i - 4] + 12 * step * calculate_y_value(y_s, z_s)) / 25;
+					z_values[i] = (48 * z_values[i - 1] - 36 * z_values[i - 2] + 16 * z_values[i - 3] + 3 * z_values[i - 4] + 12 * step * calculate_z_value(y_s, z_s)) / 25;
 
 				}
 				break;
@@ -323,7 +302,15 @@ private:
 	
 	}
 
-	double dihotomy_for_y(double a, double b, double y_current, double z_current, double step, double epsilon = 0.000001) {
+	double dihotomy_for_y(
+		double a,
+		double b,
+		double y_current,
+		double z_current,
+		double step,
+		double epsilon = 0.0000001
+		)
+	{
 		double c = 0;
 		do
 		{
@@ -342,7 +329,15 @@ private:
 		
 	}
 
-	double dihotomy_for_z(double a, double b, double y_current, double z_current, double step, double epsilon = 0.000001) {
+	double dihotomy_for_z(
+		double a,
+		double b,
+		double y_current,
+		double z_current,
+		double step,
+		double epsilon = 0.0000001
+		)
+	{
 		double c = 0;
 		do
 		{
@@ -361,6 +356,41 @@ private:
 
 	}
 
+	void gear_one_solver(
+		double step,
+		double N
+		)
+	{
+		for (size_t i = 1; i < N; i++) {
+
+			y_values[i] = dihotomy_for_y(-100, 100, y_values[i - 1], z_values[i - 1], step);
+			z_values[i] = dihotomy_for_z(-100, 100, y_values[i - 1], z_values[i - 1], step);
+
+		}
+
+	}
+
+	void gear_two_solver(
+		double step,
+		double N
+		) 
+	{
+		gear_one_solver(step, 2);
+
+
+		for (size_t i = 2; i < N; i++) {
+			y_values[i] = dihotomy_for_y(-1000, 1000, (4.0 / 3.0) * y_values[i - 1] - (1.0 / 3.0) * y_values[i - 2], z_values[i - 1], (2.0 / 3.0) * step);
+			z_values[i] = dihotomy_for_z(-1000, 1000, y_values[i - 1], (4.0 / 3.0) * z_values[i - 1] - (1.0 / 3.0) * z_values[i - 2], (2.0 / 3.0) * step);
+
+		}
+
+		/*for (size_t i = 1; i < N; i++) {
+			y_values[i] = dihotomy_for_y(-100, 100, (4.0 / 3.0) * y_values[i] - (1.0 / 3.0) * y_values[i - 1], z_values[i], (2.0 / 3.0) * step);
+			z_values[i] = dihotomy_for_z(-100, 100, y_values[i], (4.0 / 3.0) * z_values[i] - (1.0 / 3.0) * z_values[i - 1], (2.0 / 3.0) * step);
+
+		}
+	*/
+	}
 private:
 	
 	void clean_vectors() {
